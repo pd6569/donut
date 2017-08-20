@@ -4,51 +4,41 @@
 
 var canvas, engine;
 
-
 function Donut () {
     console.log("Load donut");
 
     canvas = document.getElementById('renderCanvas');
     engine = new BABYLON.Engine(canvas, true);
 
-    engine.runRenderLoop(function() {
-        scene.render();
-    });
-
     var createScene = function() {
-        // create a basic BJS Scene object
+
+        // Create scene
         var scene = new BABYLON.Scene(engine);
 
-        // create a FreeCamera, and set its position to (x:0, y:5, z:-10)
-        var camera = new BABYLON.FreeCamera('camera1', new BABYLON.Vector3(0, 5,-10), scene);
+        // Create camera to rotate around donut
+        var camera = new BABYLON.ArcRotateCamera("ArcRotateCamera", 1, 0.8, 30, new BABYLON.Vector3(0, 0, 0), scene);
+        camera.attachControl(canvas, true);
 
-        // target the camera to scene origin
-        camera.setTarget(BABYLON.Vector3.Zero());
+        // Light source
+        var light = new BABYLON.HemisphericLight("hemi", new BABYLON.Vector3(0, 1, 0), scene);
 
-        // attach the camera to the canvas
-        camera.attachControl(canvas, false);
+        // Material to attach to mesh
+        var donutMaterial = new BABYLON.StandardMaterial("texture1", scene);
+        donutMaterial.diffuseColor = new BABYLON.Color3(1.0, 0.2, 0.7);
 
-        // create a basic light, aiming 0,1,0 - meaning, to the sky
-        var light = new BABYLON.HemisphericLight('light1', new BABYLON.Vector3(0,1,0), scene);
+        // Create donut object and attach material
+        var donut = BABYLON.Mesh.CreateTorus("torus", 10, 5, 40, scene, false);
+        donut.material = donutMaterial;
 
-        // create a built-in "sphere" shape; its constructor takes 4 params: name, subdivisions, radius, scene
-        var sphere = BABYLON.Mesh.CreateSphere('sphere1', 16, 2, scene);
-
-        // move the sphere upward 1/2 of its height
-        sphere.position.y = 1;
-
-        // create a built-in "ground" shape; its constructor takes 5 params: name, width, height, subdivisions and scene
-        var ground = BABYLON.Mesh.CreateGround('ground1', 6, 6, 2, scene);
-
-        // return the created scene
         return scene;
-
     };
 
     var scene = createScene();
+
+    engine.runRenderLoop(function() {
+        scene.render();
+    });
 }
-
-
 
 window.addEventListener('DOMContentLoaded', function() {
     Donut();
